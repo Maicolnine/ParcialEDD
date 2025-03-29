@@ -1,12 +1,20 @@
 #include <iostream>
 using namespace std;
 
-int id;
-char nombre[30];
-int edad;
-char genero;
-char motivo[30];
+
+struct nodo {
+    int id;
+    char nombre[30];
+    int edad;
+    char genero;
+    char motivo[30];
+    
+    struct nodo *sig;
+};
+
+struct nodo *cab = NULL, *aux = NULL, *aux2 = NULL;
 int contadorid = 1;
+
 
 void addcliente() {
     // Se reserva memoria para un nuevo nodo
@@ -18,20 +26,26 @@ void addcliente() {
         return;
     }
 
-    // Solicita al usuario el producto a guardar
+    // Solicita al usuario los datos del cliente a guardar
     cout << "Ingrese el nombre: ";
-    cin >> aux->productos;
+    cin >> aux->nombre;
+    cout << "ingrese la edad: ";
+    cin >> aux->edad;
+    cout << "ingrese el genero (M/F): ";
+    cin >> aux->genero;
+    cout << "ingrese el motivo de atencion: ";
+    cin >> aux->motivo;
 
     // El acumulador para los id
     aux->id = contadorid++;
     // El nuevo nodo apunta a NULL (fin de lista)
     aux->sig = NULL;
     
-    // Si la lista est· vacÌa, el nuevo nodo ser· la cabeza
+    // Si la lista est√° vac√≠a, el nuevo nodo ser√° la cabeza
     if (cab == NULL) {
         cab = aux;
     } else {
-        // Se recorre la lista hasta el ˙ltimo nodo
+        // Se recorre la lista hasta el √∫ltimo nodo
         aux2 = cab;
         while (aux2->sig != NULL) {
             aux2 = aux2->sig;
@@ -45,39 +59,47 @@ void addcliente() {
 }
 
 
-void addcliente();{
 
+
+void callcliente() {
+    cout << "aun no hay nada xd";
+};
+
+
+void viewhistorial() {
+    cout << "aun no hay nada xd";
+};
+
+
+void eliminaratencion() {
+    cout << "aun no hay nada xd";
+};
+
+void liberarMemoria() {
+    aux = cab;
+    // Recorre la lista y libera nodo por nodo
+    while (aux != NULL) {
+        aux2 = aux->sig; // Guarda el siguiente nodo
+        free(aux);       // Libera el nodo actual
+        aux = aux2;      // Avanza al siguiente
+    }
+    cab = NULL; // Despu√©s de liberar, cabeza queda en NULL
+    cout << "Memoria liberada correctamente." << endl;
 }
-
-
-void callcliente();{
-
-}
-
-
-void viewhistorial();{
-
-}
-
-
-void eliminaratencion();{
-    
-}
-
 
 int main() {
     int band, opc;
 
     do {
-        // Muestra men˙ al usuario
-        cout << "\n==== MEN⁄ ====\n";
+        // Muestra men√∫ al usuario
+        cout << "\n==== MEN√ö ====\n";
         cout << "1. Registrar un cliente\n";
         cout << "2. Mostrar lista de clientes en espera\n";
         cout << "3. Atender a un cliente\n";
         cout << "4. Mostrar el historial de atenciones \n";
-        cout << "5. Deshacer la ˙ltima atenciÛn.\n";
+        cout << "5. Deshacer la √∫ltima atenci√≥n.\n";
         cout << "6. Salir\n";
-        cout << "Seleccione una opciÛn: ";
+        cout << "Seleccione una opci√≥n: ";
         cin >> opc;
 
         switch(opc) {
@@ -85,7 +107,7 @@ int main() {
                 addcliente();
                 break;
             case 2:
-                viewcliente();
+                viewhistorial();
                 break;
             case 3:
                 callcliente();
