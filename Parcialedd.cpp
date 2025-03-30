@@ -1,129 +1,160 @@
+//Michael Stwar Murillo Ruiz y Cesar Alberto Grain Agudelo
+
+
 #include <iostream>
 using namespace std;
-
 
 struct nodo {
     int id;
     char nombre[30];
     int edad;
     char genero;
-    char motivo[30];
-    
+    char motivo[50];
     struct nodo *sig;
 };
 
+struct nodo *historial = NULL;
 struct nodo *cab = NULL, *aux = NULL, *aux2 = NULL;
 int contadorid = 1;
 
-
 void addcliente() {
-    // Se reserva memoria para un nuevo nodo
-    aux = (struct nodo *) malloc(sizeof(struct nodo));
+    int hombres = 0, mujeres = 0;
+    for (aux2 = cab; aux2 != NULL; aux2 = aux2->sig) {
+        if (aux2->genero == 'M' || aux2->genero == 'm') hombres++;
+        else if (aux2->genero == 'F' || aux2->genero == 'f') mujeres++;
+    }
 
-    // Se verifica si la memoria fue asignada correctamente
+    aux = (struct nodo *)malloc(sizeof(struct nodo));
     if (aux == NULL) {
         cout << "Error: no se pudo asignar memoria." << endl;
         return;
     }
 
-    // Solicita al usuario los datos del cliente a guardar
+    cin.ignore();
     cout << "Ingrese el nombre: ";
-    cin >> aux->nombre;
-    cout << "ingrese la edad: ";
+    cin.getline(aux->nombre, 30);
+    cout << "Ingrese la edad: ";
     cin >> aux->edad;
-    cout << "ingrese el genero (M/F): ";
+    if (aux->edad < 18) {
+        cout << "Acceso denegado. Debes ser mayor de edad." << endl;
+        free(aux);
+        return;
+    }
+    cout << "Ingrese el género (M/F): ";
     cin >> aux->genero;
-    cout << "ingrese el motivo de atencion: ";
-    cin >> aux->motivo;
-
-    // El acumulador para los id
+    if ((aux->genero == 'M' || aux->genero == 'm') && (hombres - mujeres >= 4) ||
+        (aux->genero == 'F' || aux->genero == 'f') && (mujeres - hombres >= 4)) {
+        cout << "Diferencia de género excedida." << endl;
+        free(aux);
+        return;
+    }
+    cin.ignore();
+    cout << "Ingrese el motivo de atención: ";
+    cin.getline(aux->motivo, 50);
     aux->id = contadorid++;
-    // El nuevo nodo apunta a NULL (fin de lista)
     aux->sig = NULL;
-    
-    // Si la lista está vacía, el nuevo nodo será la cabeza
-    if (cab == NULL) {
-        cab = aux;
-    } else {
-        // Se recorre la lista hasta el último nodo
+    if (cab == NULL) cab = aux;
+    else {
         aux2 = cab;
-        while (aux2->sig != NULL) {
-            aux2 = aux2->sig;
-        }
-        // Se enlaza el nuevo nodo al final
+        while (aux2->sig != NULL) aux2 = aux2->sig;
         aux2->sig = aux;
     }
-    aux =  aux2 = NULL; // Se limpian los punteros auxiliares
-    free(aux);          // Se libera la memoria de aux
-    free(aux2);         // Se libera la memoria de aux2
 }
 
+void viewhistorial(nodo *cliente) {
+    nodo *nuevo = (nodo *)malloc(sizeof(nodo));
+    if (nuevo == NULL) {
+        cout << "Error: no se pudo asignar memoria para historial." << endl;
+        return;
+    }
+    *nuevo = *cliente;
+    nuevo->sig = historial;
+    historial = nuevo;
+}
 
+void atendercliente() {
+    if (cab == NULL) {
+        cout << "No hay clientes en espera." << endl;
+        return;
+    }
 
+    // Guardar referencia del primer cliente
+    aux2 = cab;
 
-void callcliente() {
-    cout << "aun no hay nada xd";
-};
+    // Mover la cabeza de la cola al siguiente cliente
+    cab = cab->sig;
 
+    // Agregar al historial antes de eliminar
+    viewhistorial(aux2);
 
-void viewhistorial() {
-    cout << "aun no hay nada xd";
-};
+    // Mostrar quién está siendo atendido
+    cout << "Atendiendo a: " << aux2->nombre << " (ID: " << aux2->id << ")" << endl;
 
+    // Liberar la memoria del cliente atendido
+    free(aux2);
+}
+
+void viewespera() {
+    int contador = 0;
+    for (aux = cab; aux != NULL; aux = aux->sig, contador++)
+        cout << "Cliente en espera: " << aux->nombre << " ID: " << aux->id << endl;
+    cout << "Total de clientes en espera: " << contador << endl;
+}
 
 void eliminaratencion() {
-    cout << "aun no hay nada xd";
-};
+    if (historial == NULL) {
+        cout << "No hay atenciones para deshacer." << endl;
+        return;
+    }
+    nodo *ultimo = historial;
+    historial = historial->sig;
+    ultimo->sig = cab;
+    cab = ultimo;
+    cout << "Última atención deshecha. Cliente " << ultimo->nombre << " regresado a la lista." << endl;
+}
 
 void liberarMemoria() {
-    aux = cab;
-    // Recorre la lista y libera nodo por nodo
-    while (aux != NULL) {
-        aux2 = aux->sig; // Guarda el siguiente nodo
-        free(aux);       // Libera el nodo actual
-        aux = aux2;      // Avanza al siguiente
+    while (cab != NULL) {
+        aux = cab;
+        cab = cab->sig;
+        free(aux);
     }
-    cab = NULL; // Después de liberar, cabeza queda en NULL
-    cout << "Memoria liberada correctamente." << endl;
+    while (historial != NULL) {
+        aux = historial;
+        historial = historial->sig;
+        free(aux);
+    }
+    cout << "Memoria liberada." << endl;
 }
 
 int main() {
-    int band, opc;
-
+    int opc;
     do {
-        // Muestra menú al usuario
         cout << "\n==== MENÚ ====\n";
         cout << "1. Registrar un cliente\n";
-        cout << "2. Mostrar lista de clientes en espera\n";
-        cout << "3. Atender a un cliente\n";
-        cout << "4. Mostrar el historial de atenciones \n";
-        cout << "5. Deshacer la última atención.\n";
+        cout << "2. Atender a un cliente\n";
+        cout << "3. Mostrar clientes en espera\n";
+        cout << "4. Mostrar historial de atenciones\n";
+        cout << "5. Deshacer la última atención\n";
         cout << "6. Salir\n";
         cout << "Seleccione una opción: ";
         cin >> opc;
 
-        switch(opc) {
-            case 1:
-                addcliente();
+        switch (opc) {
+            case 1: addcliente(); break;
+            case 2: atendercliente(); break;
+            case 3: viewespera(); break;
+            case 4:
+                if (historial == NULL) cout << "No hay clientes en el historial." << endl;
+                else {
+                    cout << "Historial de atenciones:\n";
+                    for (aux = historial; aux != NULL; aux = aux->sig)
+                        cout << "Cliente: " << aux->nombre << " (ID: " << aux->id << ")\n";
+                }
                 break;
-            case 2:
-                viewhistorial();
-                break;
-            case 3:
-                callcliente();
-                break;
-                case 4: 
-                viewhistorial();
-                break;
-            case 5:
-                eliminaratencion();
-            break;    
+            case 5: eliminaratencion(); break;
         }
-
-    } while(opc != 6);
-
-    // Al salir del programa, se libera la memoria
+    } while (opc != 6);
     liberarMemoria();
-
     return 0;
 }
