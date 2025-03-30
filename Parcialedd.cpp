@@ -1,6 +1,9 @@
 //Michael Stwar Murillo Ruiz y Cesar Alberto Grain Agudelo
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 356932acc005d99e12ddf42bc1ee27ffaf9bb0bf
 #include <iostream>
 using namespace std;
 
