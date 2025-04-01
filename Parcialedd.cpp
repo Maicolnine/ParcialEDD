@@ -145,7 +145,7 @@ int main() {
         cout << "\n==== MENÚ ====" << endl;
         cout << "1. Registrar un cliente en espera" << endl;
         cout << "2. Mostrar lista de clientes en espera" << endl;
-        cout << "3. Atender cliente (LIFO)" << endl;
+        cout << "3. Atender cliente " << endl;
         cout << "4. Mostrar el historial de atenciones" << endl;
         cout << "5. Deshacer la última atención" << endl;
         cout << "6. Salir" << endl;
